@@ -9,6 +9,87 @@ class Vertex:
   def __init__(self, key, sum, left, right, parent):
     (self.key, self.sum, self.left, self.right, self.parent) = (key, sum, left, right, parent)
 
+  def hasLeftChild(self):
+    return self.left is not None
+
+  def hasRightChild(self):
+    return self.right is not None
+
+  def hasBothChildren(self):
+    return(self.hasLeftChild and self.hasRightChild)
+
+  def isLeaf(self):
+    if (self.hasLeftChild() or self.hasRightChild()):
+      return False
+    else:
+      return True
+
+  def hasAnyChildren(self):
+    return self.right or self.left
+
+  def isLeftChild(self):
+    return self.parent and self.parent.left.key == self.key
+
+  def isRightChild(self):
+    return self.parent and self.parent.right.key == self.key
+
+  def isRoot(self):
+    return self.parent is None
+
+  def findMin(self):
+    current = self
+    while current.hasLeftChild():
+      current = current.left
+    return current
+
+  def findSuccsessor(self):
+    succ = None
+    if self.hasRightChild():
+      succ = self.right.findMin()
+    else:
+      if self.parent:
+        if self.isLeftChild():
+          succ = self.parent
+        else:
+          self.parent.right = None
+          succ = self.parent.findSuccessor()
+          self.parent.right = self
+    return succ
+
+
+  def replaceNodeData(self, key, sum, lc, rc):
+    self.key = key
+    self.sum = sum
+    self.left = lc
+    self.right = rc
+    if self.hasLeftChild():
+      self.left.parent = self
+    if self.hasRightChild():
+      self.right.parent = self
+
+  def spliceOut(self):
+    if self.isLeaf():
+      if self.isLeftChild():
+        self.parent.left = None
+      else:
+        self.parent.rightChild = None
+    elif self.hasAnyChildren():
+      if self.hasLeftChild():
+        if self.isLeftChild():
+          self.parent.left = self.left
+        else:
+          self.parent.right = self.left
+        self.left.parent = self.parent
+      else:
+        if self.isLeftChild():
+          self.parent.left = self.right
+        else:
+          if self.isLeftChild():
+            self.parent.left = self.right
+          else:
+            self.parent.right = self.right
+          self.right.parent = self.parent
+
 def update(v):
   if v == None:
     return
@@ -130,43 +211,89 @@ def insert(x):
     new_vertex = Vertex(x, x, None, None, None)  
   root = merge(merge(left, new_vertex), right)
   
-def erase(x): 
+def erase(tree_root, x):
   global root
-  # Implement erase yourself
-  pass
+  # Implement erase yourself  -------------------------------------------------
+  if tree_root.key == x:
+    remove(tree_root, x)
+  elif tree_root.key > x and tree_root.hasLeftChild():
+    erase(tree_root.left, x)
+  elif tree_root.hasRightChild():
+    erase(tree_root.right, x)
 
-def search(x): 
-  global root
-  # Implement find yourself
-  
-  return False
-  
-def sum(fr, to): 
-  global root
-  (left, middle) = split(root, fr)
-  (middle, right) = split(middle, to + 1)
-  ans = 0
-  # Complete the implementation of sum
+def remove(root, x):
+  if root.isRoot():
+    root = None
+  elif root.isLeaf():  ## node is a leaf  ---------------------------------------
+    if root.parent.left == root:
+      root.parent.left = None
+    else:
+      root.parent.right = None
+  elif root.hasBothChildren():  ## has two children  --------------------------
+    succ = root.findSuccessor()
+    succ.splicedOut()
+    ## update vertex values  --------------------------------------------------
+    root.key = succ.key
+  else: ## has one child  -----------------------------------------------------
+    if root.hasLeftChild():
+      if root.isLeftChild():
+        root.left.parent = root.parent
+        root.parent.left = root.left
+      elif root.isRightChild():
+        root.left.parent = root.parent
+        root.parent.left = root.left
+      else:
+        root.replaceNodeData(root.left.key
+                             , root.left.sum
+                             , root.left.left
+                             , root.left.right
+                             )
+    else:
+      if root.isLeftChild():
+        root.right.parent = root.parent
+        root.parent.left = root.left
+      elif root.isRightChild():
+        root.right.parent = root.parent
+        root.parent.right = root.right
+      else:
+        root.replaceNodeData(root.right.key
+                             , root.right.sum
+                             , root.right.left
+                             , root.right.right
+                             )
 
-  return ans
-
-MODULO = 1000000001
-n = int(stdin.readline())
-last_sum_result = 0
-for i in range(n):
-  line = stdin.readline().split()
-  if line[0] == '+':
-    x = int(line[1])
-    insert((x + last_sum_result) % MODULO)
-  elif line[0] == '-':
-    x = int(line[1])
-    erase((x + last_sum_result) % MODULO)
-  elif line[0] == '?':
-    x = int(line[1])
-    print('Found' if search((x + last_sum_result) % MODULO) else 'Not found')
-  elif line[0] == 's':
-    l = int(line[1])
-    r = int(line[2])
-    res = sum((l + last_sum_result) % MODULO, (r + last_sum_result) % MODULO)
-    print(res)
-    last_sum_result = res % MODULO
+# def search(x):
+#   global root
+#   # Implement find yourself
+#
+#   return False
+#
+# def sum(fr, to):
+#   global root
+#   (left, middle) = split(root, fr)
+#   (middle, right) = split(middle, to + 1)
+#   ans = 0
+#   # Complete the implementation of sum
+#
+#   return ans
+#
+# MODULO = 1000000001
+# n = int(stdin.readline())
+# last_sum_result = 0
+# for i in range(n):
+#   line = stdin.readline().split()
+#   if line[0] == '+':
+#     x = int(line[1])
+#     insert((x + last_sum_result) % MODULO)
+#   elif line[0] == '-':
+#     x = int(line[1])
+#     erase((x + last_sum_result) % MODULO)
+#   elif line[0] == '?':
+#     x = int(line[1])
+#     print('Found' if search((x + last_sum_result) % MODULO) else 'Not found')
+#   elif line[0] == 's':
+#     l = int(line[1])
+#     r = int(line[2])
+#     res = sum((l + last_sum_result) % MODULO, (r + last_sum_result) % MODULO)
+#     print(res)
+#     last_sum_result = res % MODULO
