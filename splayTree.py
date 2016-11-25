@@ -1,4 +1,15 @@
 
+
+'''
+    completed:
+
+    insert
+    find
+    delete
+
+'''
+
+
 class Node:
     def __init__(self, key, left_child = None, right_child = None, parent = None, sum = 1):
         self.key, self.leftChild, self.rightChild, self.parent, self.sum = \
@@ -22,6 +33,9 @@ class Node:
     def hasAnyChildren(self):
         return not self.isLeaf()
 
+    def hasBothChildren(self):
+        return self.hasLeftChild() and self.hasRightChild()
+
     def isLeftChild(self):
         return self.parent and self.parent.leftChild == self
 
@@ -44,17 +58,200 @@ class Node:
             self.rightChild.parent = self
         ## we need to update the sum   ----------------------------------------
 
+    def expire(self):
+        if self.isLeaf():  ## node has no children  ---------------------------
+            if self.parent and self.isRightChild():
+                self.parent.rightChild = None
+            elif self.parent and self.isLeftChild():
+                self.parent.leftChild = None
+        elif self.hasBothChildren():  ## node has at most one child  ----------
+            successor = self.findSuccessor()
+            successor.splicedOut()
+            self.key = successor.key
+            self.sum = successor.sum
+        elif self.hasLeftChild():
+            ## node has only left child  --------------------------------------
+            if self.isLeftChild():
+                self.leftChild.parent = self.parent
+                self.parent.leftChild = self.leftChild
+            else: ## node is a right child  -----------------------------------
+                self.leftChild.parent = self.parent
+                self.parent.rightChild = self.leftChild
+        else:  ## node has only right child  ----------------------------------
+            if self.isLeftChild():
+                self.rightChild.parent = self.parent
+                self.parent.leftChild = self.rightChild
+            else:
+                self.rightChild.parent = self.parent
+                self.parent.rightChild = self.rightChild
+
+    def findMin(self):
+        current = self
+        while current.hasLeftChild():
+            current = current.leftChild
+        return current
+
+    def findSuccessor(self):
+        successor = None
+        if self.hasRightChild():
+            successor = self.rightChild.findMin()
+        else:
+            if self.parent:
+                if self.isLeftChild():
+                    successor = self.parent
+                else:
+                    self.parent.rightChild = None
+                    successor = self.parent.findSuccessor()
+                    self.parent.rightChild = self
+        return successor
+
+
+    def splicedOut(self):
+        if self.isLeaf():
+            if self.isLeftChild():
+                self.parent.leftChild = None
+            else:
+                self.parent.rightChild = None
+        elif self.hasAnyChildren():
+            if self.hasLeftChild():
+                if self.isLeftChild():
+                    self.parent.leftChild = self.leftChild
+                else:
+                    self.parent.rightChild = self.leftChild
+                self.leftChild.parent = self.parent
+            else:
+                if self.isLeftChild():
+                    self.parent.leftChild = self.rightChild
+                else:
+                    if self.isLeftChild():
+                        self.parent.leftChild = self.rightChild
+                    else:
+                        self.parent.rightChild = self.rightChild
+                    self.rightChild.parent = self.parent
+
 
     '''
         METHODS TO IMPLEMENT
         -----------------------
 
-
-        hasAnyChildren
-        hasBothChildren
-        replaceNodeData
         findSuccessor
         findMin
         spliceOut
 
     '''
+
+
+## create a splay tree  -------------------------------------------------------
+
+class SplayTree:
+    def __init__(self):
+        self.root = None
+
+    ## we initially define a bst tree insert  ---------------------------------
+    def insert(self, node):
+        ## if the root exists, call _insert
+        if self.root:
+            self._insert(self.root, node)
+        else:
+            self.root = node
+
+    def _insert(self, current_node, node_to_insert):
+        if node_to_insert.key < current_node.key:  ## insert on the left side -
+            if current_node.hasLeftChild():
+                self._insert(current_node.leftChild, node_to_insert)
+            else:
+                node_to_insert.parent = current_node
+                current_node.leftChild = node_to_insert
+        elif node_to_insert.key > current_node.key: ## insert on the right side
+            if current_node.hasRightChild():
+                self._insert(current_node.rightChild, node_to_insert)
+            else:
+                node_to_insert.parent = current_node
+                current_node.rightChild = node_to_insert
+
+    ## find a given key; if there, return 'Found', else 'Not found'
+    def find(self, key):
+        print(self._find_msg(key = key))
+
+
+    def _find_msg(self, key):
+        if self.root:
+            return self._find(self.root, key)
+        else:
+            return 'Not found'
+
+    def _find(self, current_node, key_to_find):
+        if key_to_find > current_node.key:
+            if current_node.hasRightChild():
+                return self._find(current_node.rightChild, key_to_find)
+            else:
+                return 'Not found'
+        elif key_to_find < current_node.key:
+            if current_node.hasLeftChild():
+                return self._find(current_node.leftChild, key_to_find)
+            else:
+                return 'Not found'
+        elif key_to_find == current_node.key:
+            return 'Found'
+
+    def delete(self, key):
+        if self.root:
+            self._delete(self.root, key)
+        else:
+            pass
+
+    def _delete(self, current_node, key_to_delete):
+        ## three cases to consider; no children, node with one child, node with two children
+        ## first find a match on the key
+        if key_to_delete < current_node.key:
+            if current_node.hasLeftChild():
+                self._delete(current_node.leftChild, key_to_delete)
+            else:
+                pass
+        elif key_to_delete > current_node.key:
+            if current_node.hasRightChild():
+                self._delete(current_node.rightChild, key_to_delete)
+            else:
+                pass
+        elif key_to_delete == current_node.key:
+            if current_node.isRoot():
+                self.root = None
+            else:
+                current_node.expire()
+
+
+'''
+test find  ------------------------------------------------------------
+node = Node(key = 1)
+tree = SplayTree()
+tree.find(1)
+tree.insert(node)
+tree.find(1)
+node = Node(5)
+tree.insert(node)
+tree.find(5)
+tree.insert(Node(0))
+tree.root.leftChild.parent
+tree.find(0)
+'''
+
+
+# node = Node(1)
+# tree = SplayTree()
+# tree.delete(1)
+# tree.insert(node)
+# tree.delete(2)
+# tree.delete(1)
+# tree.insert(node)
+# node = Node(2)
+# tree.insert(node)
+# tree.root
+# tree.delete(2)
+# node = Node(0)
+# tree.insert(node)
+# tree.delete(0)
+# node = Node(2)
+# tree.insert(node)
+# node = Node(3)
+# tree.insert(node)
+# tree.delete(3)
