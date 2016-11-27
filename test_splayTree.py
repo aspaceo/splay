@@ -4,14 +4,17 @@ import sys
 from io import StringIO
 
 '''
-    Node functions to test
-    - isRoot
-    - isLeaf
-    - hasLeftChild
-    - hasRightChild
-    - hasAnyChildren
-    - isLeftChild
-    - isRightChild
+    tests to implement  ---
+
+
+    next
+    replaceNodeData
+    findMin
+    findSuccessor
+    splicedOut
+    leftDescendant
+    rightAncestor
+
 '''
 
 class NodeTest(unittest.TestCase):
@@ -73,7 +76,78 @@ class NodeTest(unittest.TestCase):
         x.insert(splayTree.Node(key=2))
         self.assertTrue(x.root.rightChild.isRightChild())
 
+    ## test left descendant  --------------------------------------------------
+    def test_leftDescendant_none(self):
+        a = splayTree.Node(key = 20)
+        self.assertEqual(a.leftDescendant().key, 20)
 
+    # def test_rightAncestor_none(self):
+    #     a = splayTree.Node(key = 20)
+    #     self.assertEqual(a.rightAncestor().key)
+
+    def test_leftDescendant(self):
+        a = splayTree.Node(key = 20)
+        b = splayTree.Node(key = 15)
+        c = splayTree.Node(key = 17)
+        d = splayTree.Node(key = 12)
+        e = splayTree.Node(key = 14)
+        f = splayTree.Node(key = 9)
+        ## arrange nodes  -----------------------------------------------------
+        f.parent, e.parent = d, d
+        d.leftChild, d.rightChild = f, e
+
+        d.parent, c.parent = b, b
+
+        b.leftChild, b.rightChild = d, c
+
+        b.parent = a
+
+        a.leftChild = b
+
+        self.assertEqual(a.leftDescendant().key, 9)
+
+    ## test leftAncestor  -----------------------------------------------------
+    def test_rightAncestor(self):
+        a = splayTree.Node(key = 20)
+        b = splayTree.Node(key = 15)
+        c = splayTree.Node(key = 17)
+        d = splayTree.Node(key = 12)
+        e = splayTree.Node(key = 14)
+        f = splayTree.Node(key = 9)
+        ## arrange nodes  -----------------------------------------------------
+        f.parent, e.parent = d, d
+        d.leftChild, d.rightChild = f, e
+
+        d.parent, c.parent = b, b
+
+        b.leftChild, b.rightChild = d, c
+
+        b.parent = a
+
+        a.leftChild = b
+
+        self.assertEqual(e.rightAncestor().key, 15)
+
+    def test_next(self):
+        a = splayTree.Node(key=20)
+        b = splayTree.Node(key=15)
+        c = splayTree.Node(key=17)
+        d = splayTree.Node(key=12)
+        e = splayTree.Node(key=14)
+        f = splayTree.Node(key=9)
+        ## arrange nodes  -----------------------------------------------------
+        f.parent, e.parent = d, d
+        d.leftChild, d.rightChild = f, e
+
+        d.parent, c.parent = b, b
+
+        b.leftChild, b.rightChild = d, c
+
+        b.parent = a
+
+        a.leftChild = b
+
+        self.assertEqual(d.next().key, 14)
 
 class splayTest(unittest.TestCase):
 
@@ -158,6 +232,93 @@ class splayTest(unittest.TestCase):
         x.delete(15)
         self.assertEqual(x._find_msg(20), 'Found')
 
+    ## test modified find   ---------------------------------------------------
+    def test_find_modi_root(self):
+        x = splayTree.SplayTree()
+        x.insert(splayTree.Node(87))
+        x.insert(splayTree.Node(35))
+        x.insert(splayTree.Node(81))
+        x.insert(splayTree.Node(23))
+        x.insert(splayTree.Node(13))
+        x.insert(splayTree.Node(84))
+        x.insert(splayTree.Node(41))
+        x.insert(splayTree.Node(5))
+        x.insert(splayTree.Node(31))
+        x.insert(splayTree.Node(30))
+        self.assertEqual(x._find_modi(key = 87).key, 87)
+
+    def test_find_modi_leaf(self):
+        x = splayTree.SplayTree()
+        x.insert(splayTree.Node(87))
+        x.insert(splayTree.Node(35))
+        x.insert(splayTree.Node(81))
+        x.insert(splayTree.Node(23))
+        x.insert(splayTree.Node(13))
+        x.insert(splayTree.Node(84))
+        x.insert(splayTree.Node(41))
+        x.insert(splayTree.Node(5))
+        x.insert(splayTree.Node(31))
+        x.insert(splayTree.Node(30))
+        self.assertEqual(x._find_modi(key = 41).key, 41)
+
+    def test_find_modi_missing(self):
+        x = splayTree.SplayTree()
+        x.insert(splayTree.Node(87))
+        x.insert(splayTree.Node(35))
+        x.insert(splayTree.Node(81))
+        x.insert(splayTree.Node(23))
+        x.insert(splayTree.Node(13))
+        x.insert(splayTree.Node(84))
+        x.insert(splayTree.Node(41))
+        x.insert(splayTree.Node(5))
+        x.insert(splayTree.Node(31))
+        x.insert(splayTree.Node(30))
+        self.assertEqual(x._find_modi(key = 85).key, 84)
+
+    def test_find_modi_empty_tree(self):
+        x = splayTree.SplayTree()
+        self.assertFalse(x._find_modi(10))
+
+
+
+    def test_treeSum(self):
+        x = splayTree.SplayTree()
+        x.insert(splayTree.Node(87))
+        x.insert(splayTree.Node(35))
+        x.insert(splayTree.Node(81))
+        x.insert(splayTree.Node(23))
+        x.insert(splayTree.Node(13))
+        x.insert(splayTree.Node(84))
+        x.insert(splayTree.Node(41))
+        x.insert(splayTree.Node(5))
+        x.insert(splayTree.Node(31))
+        x.insert(splayTree.Node(30))
+        self.assertEqual(x.treeSum(), 430)
+
+    def test_treeSum_empty(self):
+        x = splayTree.SplayTree()
+        self.assertEqual(x.treeSum(), 0)
+
+    def testRangeSum_a(self):
+        x = splayTree.SplayTree()
+        x.insert(splayTree.Node(87))
+        x.insert(splayTree.Node(35))
+        x.insert(splayTree.Node(81))
+        x.insert(splayTree.Node(23))
+        x.insert(splayTree.Node(13))
+        x.insert(splayTree.Node(84))
+        x.insert(splayTree.Node(41))
+        x.insert(splayTree.Node(5))
+        x.insert(splayTree.Node(31))
+        x.insert(splayTree.Node(30))
+        self.assertEqual(x.rangeSearch(10, 30).treeSum(), 66)
+
+'''
+    tests required for ...
+
+    _find_modi_
+    range_search
+'''
 
 
 

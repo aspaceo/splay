@@ -18,9 +18,11 @@ class Node:
     def __repr__(self):
         lc =  'No left child' if self.leftChild is None else self.leftChild.key
         rc = 'No right child' if self.rightChild is None else self.rightChild.key
+        par = 'No parent' if self.parent is None else self.parent.key
         node_string = "Key: " + str(self.key) + \
             '\nLeft Child: ' + str(lc) + \
             '\nRight Child: ' + str(rc) + \
+            '\nParent: ' + str(par) + \
             '\nSum: ' + str(self.sum)
         return node_string
 
@@ -48,6 +50,27 @@ class Node:
     def isRoot(self):
         return not self.parent
 
+    def leftDescendant(self):
+        if self.leftChild is None:
+            return self
+        else:
+            return self.leftChild.leftDescendant()
+
+    def rightAncestor(self):
+        if self.key < self.parent.key:
+            return self.parent
+        else:
+            return self.parent.rightAncestor()
+
+    def next(self):
+        if self.isLeaf() and self.isRoot():
+            pass
+        else:
+            if self.rightChild is not None:
+                return self.rightChild.leftDescendant()
+            else:
+                return self.rightAncestor()
+
     def replaceNodeData(self, key, left_child, right_child):
         self.key = key
         self.leftChild = left_child
@@ -57,6 +80,8 @@ class Node:
         if self.hasRightChild():
             self.rightChild.parent = self
         ## we need to update the sum   ----------------------------------------
+
+
 
     def expire(self):
         if self.isLeaf():  ## node has no children  ---------------------------
@@ -130,13 +155,10 @@ class Node:
                     self.rightChild.parent = self.parent
 
 
+
     '''
         METHODS TO IMPLEMENT
         -----------------------
-
-        findSuccessor
-        findMin
-        spliceOut
 
     '''
 
@@ -220,38 +242,77 @@ class SplayTree:
                 current_node.expire()
 
 
-'''
-test find  ------------------------------------------------------------
-node = Node(key = 1)
-tree = SplayTree()
-tree.find(1)
-tree.insert(node)
-tree.find(1)
-node = Node(5)
-tree.insert(node)
-tree.find(5)
-tree.insert(Node(0))
-tree.root.leftChild.parent
-tree.find(0)
-'''
+    def _find_modi(self, key):
+        if self.root:
+            return self._find_modi_(self.root, key)
+        else:
+            return self.root
+
+    def _find_modi_(self, current_node, key):
+        if key == current_node.key:
+            return current_node
+        elif key > current_node.key:
+            ## right side  ----------------------------------------------------
+            if current_node.rightChild is None:
+                return current_node
+            else:
+                return self._find_modi_(current_node.rightChild, key)
+        elif key < current_node.key:
+            ## left side  -----------------------------------------------------
+            if current_node.leftChild is None:
+                return current_node
+            else:
+                return self._find_modi_(current_node.leftChild, key)
+
+    '''
+        we think the problem with rangeSearch is the adding of nodes to a tree,
+        causing fields to be overwritten.
+
+        Instead, create a new node from the key of the original
+    '''
+
+    def rangeSearch(self, lower_bound, upper_bound):
+        result_set = SplayTree()
+        noode = self._find_modi(lower_bound)
+        while noode.key <= upper_bound:
+            if noode.key >= lower_bound:
+                 result_set.insert(Node(noode.key))
+            noode = noode.next()
+        return result_set
+
+    def treeSum(self):
+        if self.root is None:
+            return 0
+        return self._subTreeSum(self.root)
+
+    def _subTreeSum(self, current_node):
+        if current_node is None:
+            return 0
+        else:
+            return current_node.key + self._subTreeSum(current_node.leftChild) + self._subTreeSum(current_node.rightChild)
 
 
-# node = Node(1)
-# tree = SplayTree()
-# tree.delete(1)
-# tree.insert(node)
-# tree.delete(2)
-# tree.delete(1)
-# tree.insert(node)
-# node = Node(2)
-# tree.insert(node)
-# tree.root
-# tree.delete(2)
-# node = Node(0)
-# tree.insert(node)
-# tree.delete(0)
-# node = Node(2)
-# tree.insert(node)
-# node = Node(3)
-# tree.insert(node)
-# tree.delete(3)
+
+
+
+## ============================================================================
+## ---------------------          scratchpad          -------------------------
+## ============================================================================
+
+## testing range search  ------------------------------------------------------
+x = SplayTree()
+l = [87,35,81,23,13,84,41,5,31,30]
+for e in l:
+    x.insert(Node(e))
+
+## before rangeSearch this node is correct  -----------------------------------
+x.root.leftChild.leftChild
+
+## this call never terminates, and causes a mutation in the nodes -------------
+x.rangeSearch(10, 30)
+
+## now this node has mutated AGAINST MY WILL!!!  ------------------------------
+x.root.leftChild.leftChild
+
+
+
