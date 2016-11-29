@@ -235,44 +235,23 @@ class splayTest(unittest.TestCase):
     ## test modified find   ---------------------------------------------------
     def test_find_modi_root(self):
         x = splayTree.SplayTree()
-        x.insert(splayTree.Node(87))
-        x.insert(splayTree.Node(35))
-        x.insert(splayTree.Node(81))
-        x.insert(splayTree.Node(23))
-        x.insert(splayTree.Node(13))
-        x.insert(splayTree.Node(84))
-        x.insert(splayTree.Node(41))
-        x.insert(splayTree.Node(5))
-        x.insert(splayTree.Node(31))
-        x.insert(splayTree.Node(30))
+        l = [87, 35, 81, 23, 13, 84, 41, 5, 31, 30]
+        for e in l:
+            x.insert(splayTree.Node(e))
         self.assertEqual(x._find_modi(key = 87).key, 87)
 
     def test_find_modi_leaf(self):
         x = splayTree.SplayTree()
-        x.insert(splayTree.Node(87))
-        x.insert(splayTree.Node(35))
-        x.insert(splayTree.Node(81))
-        x.insert(splayTree.Node(23))
-        x.insert(splayTree.Node(13))
-        x.insert(splayTree.Node(84))
-        x.insert(splayTree.Node(41))
-        x.insert(splayTree.Node(5))
-        x.insert(splayTree.Node(31))
-        x.insert(splayTree.Node(30))
+        l = [87, 35, 81, 23, 13, 84, 41, 5, 31, 30]
+        for e in l:
+            x.insert(splayTree.Node(e))
         self.assertEqual(x._find_modi(key = 41).key, 41)
 
     def test_find_modi_missing(self):
         x = splayTree.SplayTree()
-        x.insert(splayTree.Node(87))
-        x.insert(splayTree.Node(35))
-        x.insert(splayTree.Node(81))
-        x.insert(splayTree.Node(23))
-        x.insert(splayTree.Node(13))
-        x.insert(splayTree.Node(84))
-        x.insert(splayTree.Node(41))
-        x.insert(splayTree.Node(5))
-        x.insert(splayTree.Node(31))
-        x.insert(splayTree.Node(30))
+        l = [87, 35, 81, 23, 13, 84, 41, 5, 31, 30]
+        for e in l:
+            x.insert(splayTree.Node(e))
         self.assertEqual(x._find_modi(key = 85).key, 84)
 
     def test_find_modi_empty_tree(self):
@@ -280,19 +259,11 @@ class splayTest(unittest.TestCase):
         self.assertFalse(x._find_modi(10))
 
 
-
     def test_treeSum(self):
         x = splayTree.SplayTree()
-        x.insert(splayTree.Node(87))
-        x.insert(splayTree.Node(35))
-        x.insert(splayTree.Node(81))
-        x.insert(splayTree.Node(23))
-        x.insert(splayTree.Node(13))
-        x.insert(splayTree.Node(84))
-        x.insert(splayTree.Node(41))
-        x.insert(splayTree.Node(5))
-        x.insert(splayTree.Node(31))
-        x.insert(splayTree.Node(30))
+        l = [87, 35, 81, 23, 13, 84, 41, 5, 31, 30]
+        for e in l:
+            x.insert(splayTree.Node(e))
         self.assertEqual(x.treeSum(), 430)
 
     def test_treeSum_empty(self):
@@ -301,23 +272,18 @@ class splayTest(unittest.TestCase):
 
     def testRangeSum_a(self):
         x = splayTree.SplayTree()
-        x.insert(splayTree.Node(87))
-        x.insert(splayTree.Node(35))
-        x.insert(splayTree.Node(81))
-        x.insert(splayTree.Node(23))
-        x.insert(splayTree.Node(13))
-        x.insert(splayTree.Node(84))
-        x.insert(splayTree.Node(41))
-        x.insert(splayTree.Node(5))
-        x.insert(splayTree.Node(31))
-        x.insert(splayTree.Node(30))
+        l = [87, 35, 81, 23, 13, 84, 41, 5, 31, 30]
+        for e in l:
+            x.insert(splayTree.Node(e))
         self.assertEqual(x.rangeSearch(10, 30).treeSum(), 66)
+
+
 
 '''
     tests required for ...
 
     _find_modi_
-    range_search
+
 '''
 
 

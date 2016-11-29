@@ -1,15 +1,5 @@
 
 
-'''
-    completed:
-
-    insert
-    find
-    delete
-
-'''
-
-
 class Node:
     def __init__(self, key, left_child = None, right_child = None, parent = None, sum = 1):
         self.key, self.leftChild, self.rightChild, self.parent, self.sum = \
@@ -57,6 +47,8 @@ class Node:
             return self.leftChild.leftDescendant()
 
     def rightAncestor(self):
+        if self.parent is None:
+            return None
         if self.key < self.parent.key:
             return self.parent
         else:
@@ -274,7 +266,7 @@ class SplayTree:
     def rangeSearch(self, lower_bound, upper_bound):
         result_set = SplayTree()
         noode = self._find_modi(lower_bound)
-        while noode.key <= upper_bound:
+        while noode and noode.key <= upper_bound:
             if noode.key >= lower_bound:
                  result_set.insert(Node(noode.key))
             noode = noode.next()
@@ -292,27 +284,36 @@ class SplayTree:
             return current_node.key + self._subTreeSum(current_node.leftChild) + self._subTreeSum(current_node.rightChild)
 
 
-
-
-
 ## ============================================================================
 ## ---------------------          scratchpad          -------------------------
 ## ============================================================================
 
-## testing range search  ------------------------------------------------------
-x = SplayTree()
-l = [87,35,81,23,13,84,41,5,31,30]
-for e in l:
-    x.insert(Node(e))
 
-## before rangeSearch this node is correct  -----------------------------------
-x.root.leftChild.leftChild
+# first submission test  -----------------------------------------------------
+tree = SplayTree()
+tree.find(1)
+tree.insert(Node(1))
+tree.find(1)
+tree.insert(Node(2))
+tree.rangeSearch(1, 2).treeSum()
+tree.insert(Node(2))
+tree.find(2)
+tree.delete(2)
+tree.find(2)
+tree.rangeSearch(1, 2).treeSum()
+tree.delete(3)
+tree.find(3)
+tree.delete(1)
+tree.insert(Node(10))
+tree.rangeSearch(1, 10).treeSum()
 
-## this call never terminates, and causes a mutation in the nodes -------------
-x.rangeSearch(10, 30)
-
-## now this node has mutated AGAINST MY WILL!!!  ------------------------------
-x.root.leftChild.leftChild
-
-
-
+# result_set = SplayTree()
+# noode = tree._find_modi(1)
+# noode.key >= 1
+# result_set.insert(Node(noode.key))
+# noode = noode.next()
+# noode
+# noode.key <= 2
+# noode.key >= 1
+# result_set.insert(Node(noode.key))
+# noode = noode.next()
