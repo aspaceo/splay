@@ -290,17 +290,18 @@ class SplayTree:
 from sys import stdin
 from sys import setrecursionlimit
 import os
-os.chdir("/Users/p.whyte/Desktop/splay/tests")
+os.chdir("/Users/Paul/Documents/Coursera/SPEC_Data Structures and Algorithms/ii_Data Structures/assignments/week 5 - search trees/Starters PA4/set_range_sum/tests")
+
 
 
 ## initialise the tree  -------------------------------------------------------
 tree = SplayTree()
 MODULO = 1000000001
 ## connect to file   ----------------------------------------------------------
-input = open('83.txt', 'r')
+input = open('36.txt', 'r')
 
 
-setrecursionlimit(25000)
+##setrecursionlimit(25000)
 
 n = int(input.readline())
 last_sum_result = 0
