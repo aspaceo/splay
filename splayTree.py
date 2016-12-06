@@ -81,7 +81,7 @@ class Node:
                 self.parent.rightChild = None
             elif self.parent and self.isLeftChild():
                 self.parent.leftChild = None
-        elif self.hasBothChildren():  ## node has at most one child  ----------
+        elif self.hasBothChildren():  ## node has both children  --------------
             successor = self.findSuccessor()
             successor.splicedOut()
             self.key = successor.key
@@ -287,6 +287,19 @@ class SplayTree:
 ## ============================================================================
 ## ---------------------          scratchpad          -------------------------
 ## ============================================================================
+
+
+my_tree = SplayTree()
+my_tree.insert(Node(1000))
+my_tree.insert(Node(500))
+my_tree.insert(Node(1500))
+my_tree.insert(Node(250))
+my_tree.insert(Node(750))
+my_tree.insert(Node(625))
+my_tree.insert(Node(825))
+## the delete  ----------------------------------------------------------------
+my_tree.delete(500)
+
 
 
 # first submission test  -----------------------------------------------------
