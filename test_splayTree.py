@@ -232,6 +232,15 @@ class splayTest(unittest.TestCase):
         x.delete(15)
         self.assertEqual(x._find_msg(20), 'Found')
 
+    def test_delete_big(self):
+        inserts = [1000, 500, 1500, 250, 750, 625, 825, 626]
+        my_tree = splayTree.SplayTree()
+        for x in inserts:
+            my_tree.insert(splayTree.Node(x))
+        my_tree.delete(500)
+        parent = my_tree.root.leftChild.rightChild.leftChild.parent.key
+        self.assertEqual(parent, 750)
+
     ## test modified find   ---------------------------------------------------
     def test_find_modi_root(self):
         x = splayTree.SplayTree()

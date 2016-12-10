@@ -140,11 +140,9 @@ class Node:
                 if self.isLeftChild():
                     self.parent.leftChild = self.rightChild
                 else:
-                    if self.isLeftChild():
-                        self.parent.leftChild = self.rightChild
-                    else:
-                        self.parent.rightChild = self.rightChild
-                    self.rightChild.parent = self.parent
+                    self.parent.rightChild = self.rightChild
+                self.rightChild.parent = self.parent
+
 
 
 
@@ -297,6 +295,7 @@ my_tree.insert(Node(250))
 my_tree.insert(Node(750))
 my_tree.insert(Node(625))
 my_tree.insert(Node(825))
+my_tree.insert(Node(626))
 ## the delete  ----------------------------------------------------------------
 my_tree.delete(500)
 
